@@ -32,6 +32,7 @@ def test_hf_summarizer_parses_list(monkeypatch):
         return _Resp(200, [{"summary_text": "ok"}])
 
     import requests
+
     monkeypatch.setattr(requests, "post", fake_post)
 
     s = HFSummarizer(hf_api_token="t", model_id="m")
@@ -43,6 +44,7 @@ def test_hf_summarizer_raises_on_http_error(monkeypatch):
         return _Resp(500, {"error": "boom"}, text="boom")
 
     import requests
+
     monkeypatch.setattr(requests, "post", fake_post)
 
     s = HFSummarizer(hf_api_token="t", model_id="m")

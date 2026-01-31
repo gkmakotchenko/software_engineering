@@ -59,10 +59,7 @@ async def on_text(message: Message) -> None:
     try:
         summary = await asyncio.to_thread(_summarizer.summarize, text, params)
     except SummarizationError as e:
-        await message.answer(
-            "Не удалось сделать суммаризацию.\n"
-            f"Причина: {e}"
-        )
+        await message.answer("Не удалось сделать суммаризацию.\n" f"Причина: {e}")
         return
     except Exception as e:  # safety net
         await message.answer(f"Неожиданная ошибка: {type(e).__name__}: {e}")
