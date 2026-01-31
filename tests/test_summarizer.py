@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import json
-import types
 
 import pytest
 
-from app.summarizer import HFSummarizer, SummaryParams, clamp_text, SummarizationError
+from app.summarizer import HFSummarizer, SummarizationError, SummaryParams, clamp_text
 
 
 def test_clamp_text_no_change():
@@ -33,6 +32,7 @@ def test_hf_summarizer_parses_list(monkeypatch):
         return _Resp(200, [{"summary_text": "ok"}])
 
     import requests
+
     monkeypatch.setattr(requests, "post", fake_post)
 
     s = HFSummarizer(hf_api_token="t", model_id="m")
@@ -44,6 +44,7 @@ def test_hf_summarizer_raises_on_http_error(monkeypatch):
         return _Resp(500, {"error": "boom"}, text="boom")
 
     import requests
+
     monkeypatch.setattr(requests, "post", fake_post)
 
     s = HFSummarizer(hf_api_token="t", model_id="m")

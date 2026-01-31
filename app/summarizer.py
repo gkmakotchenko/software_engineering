@@ -55,7 +55,12 @@ class HFSummarizer:
 
         # HF Inference API commonly returns:
         # [{"summary_text": "..."}]
-        if isinstance(data, list) and data and isinstance(data[0], dict) and "summary_text" in data[0]:
+        if (
+            isinstance(data, list)
+            and data
+            and isinstance(data[0], dict)
+            and "summary_text" in data[0]
+        ):
             return str(data[0]["summary_text"]).strip()
 
         # Sometimes returns {"error": "..."} or other formats

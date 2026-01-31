@@ -7,8 +7,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
 
 from .config import settings
-from .summarizer import SummaryParams, build_summarizer, clamp_text, SummarizationError
-
+from .summarizer import SummarizationError, SummaryParams, build_summarizer, clamp_text
 
 dp = Dispatcher()
 _summarizer = build_summarizer(
@@ -60,10 +59,7 @@ async def on_text(message: Message) -> None:
     try:
         summary = await asyncio.to_thread(_summarizer.summarize, text, params)
     except SummarizationError as e:
-        await message.answer(
-            "Не удалось сделать суммаризацию.\n"
-            f"Причина: {e}"
-        )
+        await message.answer("Не удалось сделать суммаризацию.\n" f"Причина: {e}")
         return
     except Exception as e:  # safety net
         await message.answer(f"Неожиданная ошибка: {type(e).__name__}: {e}")

@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 from .config import settings
-from .summarizer import SummaryParams, build_summarizer, clamp_text, SummarizationError
+from .summarizer import SummarizationError, SummaryParams, build_summarizer, clamp_text
 
 app = FastAPI(title="Summarization API")
 
