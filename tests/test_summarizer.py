@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import json
-import types
 
 import pytest
 
-from app.summarizer import HFSummarizer, SummaryParams, clamp_text, SummarizationError
+from app.summarizer import HFSummarizer, SummarizationError, SummaryParams, clamp_text
 
 
 def test_clamp_text_no_change():

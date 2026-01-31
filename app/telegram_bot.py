@@ -7,8 +7,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
 
 from .config import settings
-from .summarizer import SummaryParams, build_summarizer, clamp_text, SummarizationError
-
+from .summarizer import SummarizationError, SummaryParams, build_summarizer, clamp_text
 
 dp = Dispatcher()
 _summarizer = build_summarizer(
