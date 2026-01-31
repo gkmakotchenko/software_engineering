@@ -1,0 +1,13 @@
+aiogram==3.13.1
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+requests==2.32.3
+pydantic==2.9.2
+pydantic-settings==2.6.1
+
+pytest==8.3.3
+ruff==0.7.4
+
+# Optional: local inference (heavy). Uncomment if you want to run model locally.
+# transformers==4.46.3
+# torch>=2.2
