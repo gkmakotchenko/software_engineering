@@ -1,160 +1,189 @@
-# Telegram бот для суммаризации текста
+# Telegram-бот для суммаризации текста
 
-Проект соответствует требованиям итогового проекта: есть **API-приложение (FastAPI)** + **Telegram-бот**, код в GitHub, CI (тесты + PEP8/линтинг), работа через ветки и code review. fileciteturn0file0
+Учебный проект по дисциплине «Программная инженерия».
+Реализован Telegram-бот и HTTP API для автоматической суммаризации текста с использованием готовой предобученной нейросетевой модели без её обучения.
 
-## 1) Что делает
-
-- Telegram-бот принимает текст и возвращает краткое резюме.
-- API: `POST /summarize` — получить суммаризацию по HTTP.
-
-Суммаризация делается **готовой предобученной моделью** с Hugging Face:
-- по умолчанию через **Hugging Face Inference API** (серверless, модель не хостите сами) citeturn0search6turn0search0  
-- модель по умолчанию: `cointegrated/rut5-base-absum` (русская абстрактивная суммаризация) citeturn0search2
-
-> Если хотите — можно переключиться на локальный запуск модели (см. ниже), но для облака обычно проще HF Inference API.
+Проект соответствует требованиям итогового задания:
+- API-приложение (FastAPI)
+- Telegram-бот
+- Использование готовой ML-модели (без обучения)
+- GitHub-репозиторий
+- CI (линтер + тесты)
+- Работа через ветки и Pull Request
 
 ---
 
-## 2) Локальный запуск (macOS / Linux / Windows)
+## 1. Функциональность
 
-### 2.1 Установка
+### Telegram-бот
+- Принимает текст от пользователя
+- Возвращает краткое содержание (summary)
 
-```bash
+### HTTP API
+- POST /summarize — суммаризация текста
+- GET /health — проверка работоспособности сервиса
+
+---
+
+## 2. Используемая модель и ИИ-часть
+
+Для суммаризации используется Hugging Face Inference API (serverless inference).
+
+- Модель: facebook/bart-large-cnn
+- Тип: encoder-decoder (BART)
+- Язык: английский
+- Обучение модели не выполняется
+
+Модель вызывается по HTTP через официальный endpoint:
+
+https://router.huggingface.co/hf-inference/models/{model_id}
+
+Таким образом:
+- модель не хранится локально
+- GPU и собственная ML-инфраструктура не требуются
+- используется готовая предобученная модель как сервис
+
+---
+
+## 3. Стек технологий
+
+- Python 3.11
+- FastAPI
+- aiogram 3
+- Hugging Face Inference API
+- pytest
+- ruff (lint + format)
+- GitHub Actions (CI)
+
+---
+
+## 4. Установка и локальный запуск
+
+### 4.1 Клонирование репозитория
+
+git clone https://github.com/<username>/software_engineering.git
+cd software_engineering
+
+### 4.2 Виртуальное окружение
+
 python -m venv .venv
-# macOS/Linux
-source .venv/bin/activate
-# Windows (PowerShell)
-# .venv\Scripts\Activate.ps1
+source .venv/bin/activate   # macOS / Linux
+.venv\Scripts\activate    # Windows
+
+### 4.3 Установка зависимостей
 
 pip install -r requirements.txt
-```
 
-### 2.2 Настройка переменных окружения
+---
 
-Создайте файл `.env` в корне:
+## 5. Настройка переменных окружения
 
-```env
+В корне проекта создайте файл .env:
+
 TELEGRAM_BOT_TOKEN=123456:ABCDEF...
-HF_API_TOKEN=hf_xxx   # рекомендовано (иначе будет пытаться запускать локальную модель)
-HF_MODEL_ID=cointegrated/rut5-base-absum
-```
+HF_API_TOKEN=hf_xxxxxxxxxxxxxxxxx
+HF_MODEL_ID=facebook/bart-large-cnn
 
-- `HF_API_TOKEN` — токен Hugging Face (Settings → Access Tokens). Для запросов нужен Bearer-токен. citeturn0search0
+- TELEGRAM_BOT_TOKEN — токен Telegram-бота (BotFather)
+- HF_API_TOKEN — Access Token Hugging Face
+- HF_MODEL_ID — используемая модель
 
-### 2.3 Запуск бота
+---
 
-```bash
+## 6. Запуск приложения
+
+### 6.1 Запуск Telegram-бота
+
 python -m app.telegram_bot
-```
 
-### 2.4 Запуск API
+### 6.2 Запуск API
 
-```bash
 uvicorn app.api:app --reload --port 8000
-```
 
-Проверка:
-- `GET http://127.0.0.1:8000/health`
-- `POST http://127.0.0.1:8000/summarize` с JSON `{"text":"..."}`
+### 6.3 Проверка API
+
+Swagger UI:
+http://127.0.0.1:8000/docs
+
+Пример запроса:
+
+POST /summarize
+{
+  "text": "Long English text..."
+}
 
 ---
 
-## 3) Тесты и линтер
+## 7. Тесты и линтер
 
-```bash
+### 7.1 Линтер
+
 ruff check .
+
+### 7.2 Форматирование кода
+
 ruff format .
-pytest -q
-```
+
+### 7.3 Тесты
+
+pytest
+
+Рекомендуемый порядок перед коммитом:
+
+ruff format . && ruff check . && pytest
 
 ---
 
-## 4) GitHub: как правильно вести разработку (ветки + PR + code review)
+## 8. CI (GitHub Actions)
 
-Рекомендуемый flow:
-1. `main` — стабильная ветка (релизы/защита).
-2. `develop` — интеграционная ветка.
-3. Фича делается в ветке `feature/<name>`.
+CI настроен в .github/workflows/ci.yml и запускается на push и pull_request.
+
+Выполняется:
+- ruff check
+- ruff format --check
+- pytest
+
+CI гарантирует соблюдение PEP8 и прохождение тестов.
+
+---
+
+## 9. Git-workflow
+
+Используется стандартный flow:
+- main — стабильная версия
+- develop — ветка разработки
+- feature/* — ветки для отдельных задач
 
 Пример:
 
-```bash
-git checkout -b develop
-git push -u origin develop
+git checkout -b feature/api
+git commit -m "Add summarization API"
+git push -u origin feature/api
 
-git checkout -b feature/telegram-commands
-# ... changes
-git add .
-git commit -m "Add /help and /model commands"
-git push -u origin feature/telegram-commands
-```
-
-Далее:
-- создаёте Pull Request в `develop`
-- коллега делает review
-- CI должен быть зелёным (tests + ruff)
-- merge
+Далее создаётся Pull Request и выполняется code review.
 
 ---
 
-## 5) CI (GitHub Actions)
+## 10. Деплой
 
-Workflow находится в `.github/workflows/ci.yml` и запускается на `push` и `pull_request`:
-- `ruff check` + `ruff format --check`
-- `pytest` fileciteturn0file0
+Деплой на Hugging Face не является обязательным.
 
----
-
-## 6) Деплой: нужно ли на Hugging Face?
-
-По заданию нужно развернуть приложение в облаке (подойдут Streamlit Cloud / Яндекс.Облако / Hugging Face Spaces). fileciteturn0file0  
-**Деплоить именно на Hugging Face не обязательно**, достаточно выбрать *одну* платформу.
-
-Но нюанс:
-- Telegram-бот — это **долгоживущий процесс**. На платформах типа Spaces/Streamlit Cloud он может «засыпать», если нет трафика.
-- Поэтому самый практичный вариант:  
-  **API** можно разместить где угодно (в том числе HF Spaces), а **бот** — на VPS/облаке (например, VM в Яндекс.Облаке) и он будет стабильно онлайн.
-
-### Вариант A (самый простой и надёжный): Яндекс.Облако VM + Docker
-1. Поднимите VM (Ubuntu).
-2. Установите Docker.
-3. Склонируйте репозиторий.
-4. Запустите API контейнером и бота отдельным процессом (или вторым контейнером).
-
-API:
-```bash
-docker build -t summarizer-api .
-docker run -d --name summarizer-api -p 8000:8000 --env-file .env summarizer-api
-```
-
-Бот (на VM без Docker):
-```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-python -m app.telegram_bot
-```
-
-### Вариант B: Hugging Face Spaces (Docker Space) — только API/демо
-Если хотите «красивую ссылку» на облачное демо:
-- создайте **Space → Docker**
-- добавьте туда этот репозиторий
-- Space запустит `Dockerfile` (по умолчанию — FastAPI)
-
-⚠️ Для постоянной работы Telegram-бота Spaces может быть нестабилен из-за сна — поэтому лучше бот держать на VM.
+Telegram-бот является долгоживущим процессом, поэтому наиболее надёжный вариант — запуск на VM или VPS (например, в Яндекс.Облаке).
+API может быть размещено там же или отдельно.
 
 ---
 
-## 7) Про модель и обучение
+## 11. Ограничения
 
-Обучать модель не нужно — можно использовать готовую с Hugging Face. fileciteturn0file0  
-В проекте уже заложен вариант через HF Inference API (готовая модель + удалённый инференс). citeturn0search6turn0search2
+- Модель facebook/bart-large-cnn предназначена для английского языка
+- Для русского языка потребуется другая модель или локальный запуск
 
 ---
 
-## 8) Командная часть (что показать на защите)
+## 12. Демонстрация на защите
 
-За 10 минут обычно хватает:
-- показать PR'ы + code review
-- показать, что CI зелёный
-- показать бота в Telegram (пара примеров)
-- показать деплой (URL API или VM) и health-check
+- GitHub-репозиторий
+- История коммитов и Pull Requests
+- Успешный CI
+- Работа Telegram-бота
+- Работа API (/summarize)
